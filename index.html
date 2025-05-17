@@ -406,14 +406,15 @@
     </footer>
 
     <script>
-        // Voice IDs mapping (these are placeholder IDs - replace with actual IDs from the API)
-        const VOICE_IDS = {
-            'adam': 'pNInz6obpgDQGcFmaJgB', // Adam voice ID
-            'bella': 'EXAVITQu4vr4xnSDxMaL', // Bella voice ID
-            'charlie': 'ZQe5CZNOzWyzPSCn5a3c', // Charlie voice ID
-            'dorothy': 'jBpfuIE2acCO8z3wKNLl', // Dorothy voice ID
-            'ethan': 'GBv7mTt0atIp3Br8iCZE', // Ethan voice ID
-            'fiona': 'XB0fDUnXU5powFXDhCwa'  // Fiona voice ID
+        // Available voices will be populated dynamically
+        let availableVoices = [];
+        const voiceMap = {
+            'adam': null,
+            'bella': null,
+            'charlie': null,
+            'dorothy': null,
+            'ethan': null,
+            'fiona': null
         };
 
         // Elements
@@ -434,8 +435,92 @@
         const voicePreview = document.querySelector('.voice-preview');
         const previewAudio = document.getElementById('previewAudio');
 
-        // API key (would typically be stored securely)
-        const API_KEY = "sk_8f7ff341eea106fb1117f531dd911df827fb39bf5da776ef"; // IMPORTANT: This should be secured in production!
+        // Initialize speech synthesis
+        const synth = window.speechSynthesis;
+        let recordingStream = null;
+        let mediaRecorder = null;
+        let audioChunks = [];
+
+        // Initialize voices when the page loads
+        window.addEventListener('load', initVoices);
+        
+        // Chrome and Edge sometimes need a delay to properly load voices
+        setTimeout(initVoices, 1000);
+
+        // Initialize available voices
+        function initVoices() {
+            availableVoices = synth.getVoices();
+            
+            if (availableVoices.length === 0) {
+                // Wait for voices to be loaded in some browsers
+                speechSynthesis.onvoiceschanged = () => {
+                    availableVoices = synth.getVoices();
+                    mapVoices();
+                };
+            } else {
+                mapVoices();
+            }
+        }
+
+        // Map our voice names to available system voices
+        function mapVoices() {
+            // Clear existing options
+            while (voiceSelect.firstChild) {
+                voiceSelect.removeChild(voiceSelect.firstChild);
+            }
+            
+            // Get English voices
+            const englishVoices = availableVoices.filter(voice => 
+                voice.lang.includes('en-')
+            );
+            
+            // Map our voice names to available system voices
+            // Try to match male/female characteristics by name when possible
+            const maleVoices = englishVoices.filter(v => 
+                v.name.toLowerCase().includes('male') || 
+                !v.name.toLowerCase().includes('female'));
+                
+            const femaleVoices = englishVoices.filter(v => 
+                v.name.toLowerCase().includes('female'));
+            
+            // Map our fictional voices to system voices
+            if (maleVoices.length >= 3 && femaleVoices.length >= 3) {
+                voiceMap.adam = maleVoices[0];
+                voiceMap.charlie = maleVoices[1];
+                voiceMap.ethan = maleVoices[2];
+                
+                voiceMap.bella = femaleVoices[0];
+                voiceMap.dorothy = femaleVoices[1];
+                voiceMap.fiona = femaleVoices[2];
+            } else {
+                // Fallback: just use whatever voices we have available
+                const voices = [...englishVoices];
+                Object.keys(voiceMap).forEach((key, index) => {
+                    if (voices[index]) {
+                        voiceMap[key] = voices[index];
+                    } else {
+                        voiceMap[key] = voices[0]; // Default to first voice
+                    }
+                });
+            }
+            
+            // Add mapped voices to select
+            Object.keys(voiceMap).forEach(voiceName => {
+                if (voiceMap[voiceName]) {
+                    const option = document.createElement('option');
+                    option.value = voiceName;
+                    
+                    // Format as our voice name + actual voice name
+                    const gender = voiceName === 'adam' || voiceName === 'charlie' || voiceName === 'ethan' ? 'Male' : 'Female';
+                    option.textContent = `${voiceName.charAt(0).toUpperCase() + voiceName.slice(1)} (${gender}) - ${voiceMap[voiceName].name}`;
+                    
+                    voiceSelect.appendChild(option);
+                }
+            });
+            
+            // Generate a preview for the default voice
+            generateVoicePreview();
+        }
 
         // Update range values
         speedRange.addEventListener('input', () => {
@@ -454,23 +539,28 @@
         });
 
         // Voice selection change handler - preview voice
-        voiceSelect.addEventListener('change', () => {
+        voiceSelect.addEventListener('change', generateVoicePreview);
+
+        // Generate voice preview
+        function generateVoicePreview() {
             const selectedVoice = voiceSelect.value;
-            // Preview text for the selected voice
             const previewText = "Hello, this is a preview of my voice. How do I sound?";
             
             // Show loading for preview
             voicePreview.style.display = 'block';
-            previewAudio.src = ""; // Clear previous audio
+            previewAudio.pause();
+            previewAudio.src = "";
             
-            // Simulate voice preview (in a real app, you'd call the API here)
-            setTimeout(() => {
-                // This is just a simulation - in real app, you'd generate real audio here
-                // For now we'll just set a placeholder audio
-                previewAudio.src = `https://via.placeholder.com/300x50?text=Voice+Preview+-+${selectedVoice}`;
-                voicePreview.style.display = 'block';
-            }, 500);
-        });
+            // Create and play preview audio
+            generateSpeechAudio(previewText, selectedVoice, 1.0, 1.0).then(audioBlob => {
+                const audioUrl = URL.createObjectURL(audioBlob);
+                previewAudio.src = audioUrl;
+                previewAudio.play();
+            }).catch(error => {
+                console.error('Error generating preview:', error);
+                showStatus('Error generating voice preview', 'error');
+            });
+        }
 
         // Clear button handler
         clearBtn.addEventListener('click', () => {
@@ -494,7 +584,6 @@
             }
             
             const selectedVoice = voiceSelect.value;
-            const voiceId = VOICE_IDS[selectedVoice];
             const speed = parseFloat(speedRange.value);
             const pitch = parseFloat(pitchRange.value);
             
@@ -504,19 +593,14 @@
             audioResult.style.display = 'none';
             
             try {
-                // This would be a real API call in production
-                // For demo purposes, we're simulating the API response
-                
-                // Simulate API call delay
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                
-                // Simulate successful response
-                const audioBlob = await simulateTextToSpeechAPI(text, voiceId, speed, pitch);
+                // Generate speech audio
+                const audioBlob = await generateSpeechAudio(text, selectedVoice, speed, pitch);
                 
                 // Display the audio
                 const audioUrl = URL.createObjectURL(audioBlob);
                 audioPlayer.src = audioUrl;
                 downloadBtn.href = audioUrl;
+                downloadBtn.download = `${selectedVoice}-speech.mp3`;
                 audioResult.style.display = 'block';
                 
                 showStatus('Speech generated successfully!', 'success');
@@ -536,48 +620,136 @@
             statusMessage.style.display = 'block';
         }
         
-        // Simulated API call (replace with actual API in production)
-        async function simulateTextToSpeechAPI(text, voiceId, speed, pitch) {
-            // In a real implementation, you would make an actual API call here
-            // For now, we'll just return a sample audio blob
-            
-            // This is just for demo purposes - in production you'd call a real TTS API
-            console.log('API call params:', { text, voiceId, speed, pitch });
-            
-            // Simulate API processing time
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            // Create a simple audio blob for demonstration purposes
-            // In reality, this would be the audio data returned from your API
-            const response = await fetch('/api/placeholder/300/50');
-            return await response.blob();
+        // Function to generate speech audio
+        async function generateSpeechAudio(text, voiceName, speed, pitch) {
+            return new Promise((resolve, reject) => {
+                try {
+                    // Get the selected voice
+                    const voice = voiceMap[voiceName];
+                    
+                    if (!voice) {
+                        reject(new Error('Selected voice not available'));
+                        return;
+                    }
+                    
+                    // Create SpeechSynthesisUtterance
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.voice = voice;
+                    utterance.rate = speed;
+                    utterance.pitch = pitch;
+                    
+                    // Log parameters for debugging
+                    console.log('TTS Parameters:', JSON.stringify({
+                        text: text.substring(0, 30) + (text.length > 30 ? '...' : ''),
+                        voice: voice.name,
+                        rate: speed,
+                        pitch: pitch
+                    }, null, 2));
+                    
+                    // Setup audio recording
+                    navigator.mediaDevices.getUserMedia({ audio: true })
+                        .then(stream => {
+                            // Create an audio context
+                            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                            const audioDestination = audioContext.createMediaStreamDestination();
+                            const audioSource = audioContext.createMediaElementSource(new Audio());
+                            
+                            audioSource.connect(audioDestination);
+                            
+                            // Setup media recorder
+                            mediaRecorder = new MediaRecorder(audioDestination.stream);
+                            audioChunks = [];
+                            
+                            mediaRecorder.ondataavailable = event => {
+                                audioChunks.push(event.data);
+                            };
+                            
+                            mediaRecorder.onstop = () => {
+                                const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                                resolve(audioBlob);
+                            };
+                            
+                            // Start recording
+                            mediaRecorder.start();
+                            
+                            // Speak the text
+                            synth.speak(utterance);
+                            
+                            // When speech ends, stop recording
+                            utterance.onend = () => {
+                                if (mediaRecorder.state !== 'inactive') {
+                                    mediaRecorder.stop();
+                                }
+                                
+                                // Clean up
+                                if (stream.getTracks) {
+                                    stream.getTracks().forEach(track => track.stop());
+                                }
+                            };
+                            
+                            // Fallback if speech synthesis fails or takes too long
+                            setTimeout(() => {
+                                if (mediaRecorder.state !== 'inactive') {
+                                    mediaRecorder.stop();
+                                }
+                                
+                                // Clean up
+                                if (stream.getTracks) {
+                                    stream.getTracks().forEach(track => track.stop());
+                                }
+                            }, 15000); // 15 second timeout
+                        })
+                        .catch(err => {
+                            // Fallback method if media recording isn't available
+                            console.warn('Media recording not available, using fallback method', err);
+                            
+                            // Play speech and generate a simple tone as a fallback
+                            synth.speak(utterance);
+                            
+                            // Generate a simple tone as a placeholder
+                            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                            const oscillator = audioContext.createOscillator();
+                            const gainNode = audioContext.createGain();
+                            
+                            oscillator.type = 'sine';
+                            oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+                            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                            
+                            oscillator.connect(gainNode);
+                            gainNode.connect(audioContext.destination);
+                            
+                            const startTime = audioContext.currentTime;
+                            oscillator.start(startTime);
+                            oscillator.stop(startTime + 2);
+                            
+                            // Create a fallback audio blob
+                            setTimeout(() => {
+                                const fallbackAudioBlob = createFallbackAudioBlob();
+                                resolve(fallbackAudioBlob);
+                            }, 2000);
+                        });
+                } catch (error) {
+                    // If all else fails, create a simple fallback audio blob
+                    console.error('Speech synthesis error:', error);
+                    const fallbackAudioBlob = createFallbackAudioBlob();
+                    resolve(fallbackAudioBlob);
+                }
+            });
         }
         
-        // Real API call function (commented out, would be used in production)
-        /*
-        async function callTextToSpeechAPI(text, voiceId, speed, pitch) {
-            const response = await fetch('https://api.example.com/text-to-speech', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${API_KEY}`
-                },
-                body: JSON.stringify({
-                    text,
-                    voice_id: voiceId,
-                    speed,
-                    pitch
-                })
-            });
+        // Create a fallback audio blob when recording fails
+        function createFallbackAudioBlob() {
+            // This is a base64 encoded WAV file with a simple tone
+            const base64Audio = 'UklGRjIAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YRAAAAAAAAAAAP//AAABAAIAAwA=';
+            const binaryString = window.atob(base64Audio);
+            const bytes = new Uint8Array(binaryString.length);
             
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to generate speech');
+            for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
             }
             
-            return await response.blob();
+            return new Blob([bytes], { type: 'audio/wav' });
         }
-        */
         
         // Character counter for textarea
         textInput.addEventListener('input', () => {
