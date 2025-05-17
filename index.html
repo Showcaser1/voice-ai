@@ -1,2 +1,211 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>ElevenLabs API Demo</title><style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');*{box-sizing:border-box}body{background:#121212;color:#eee;font-family:'Inter',sans-serif;margin:0;padding:30px 20px;min-height:100vh;display:flex;justify-content:center;align-items:flex-start}#app{background:#1e1e1e;border-radius:20px;width:100%;max-width:720px;box-shadow:0 0 20px #0a84ff88;overflow:hidden;display:flex;flex-direction:column}header{padding:20px 30px;border-bottom:1px solid #333;font-weight:700;font-size:1.8rem;letter-spacing:1px;color:#0a84ff;text-shadow:0 0 15px #0a84ff66;user-select:none}nav{display:flex;background:#121212;border-bottom:1px solid #333}nav button{flex:1;background:transparent;border:none;color:#bbb;font-weight:600;font-size:1rem;padding:14px 0;cursor:pointer;transition:background-color .3s,color .3s;border-bottom:3px solid transparent}nav button.active{color:#0a84ff;border-bottom-color:#0a84ff;background:#222;box-shadow:inset 0 -3px 6px #0a84ff66}nav button:hover:not(.active){background:#2a2a2a}main{padding:25px 30px;flex-grow:1;display:flex;flex-direction:column;gap:20px}label{font-weight:600;margin-bottom:6px;display:block;color:#ddd;user-select:none}textarea{width:100%;min-height:140px;background:#121212;border:none;border-radius:16px;padding:18px 22px;font-size:1.15rem;color:#eee;box-shadow:0 0 20px #0a84ff33 inset;resize:vertical;font-family:'Inter',sans-serif;outline-offset:0;transition:box-shadow .3s}textarea:focus{box-shadow:0 0 35px #0a84ffaa inset;outline:none}select{width:100%;background:#121212;border:none;border-radius:16px;padding:14px 20px;font-size:1rem;color:#eee;box-shadow:0 0 20px #0a84ff33 inset;cursor:pointer;font-family:'Inter',sans-serif;transition:box-shadow .3s;outline-offset:0}select:hover,select:focus{box-shadow:0 0 35px #0a84ffaa inset;outline:none}button#generateBtn{margin-top:10px;background:#0a84ff;border:none;border-radius:20px;padding:16px;font-size:1.3rem;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 0 25px #0a84ffcc;transition:background-color .3s,box-shadow .3s;user-select:none}button#generateBtn:hover:not(:disabled){background:#005ecb;box-shadow:0 0 40px #005ecbcc}button#generateBtn:disabled{opacity:.6;cursor:not-allowed}audio#audioPlayer{margin-top:20px;width:100%;border-radius:16px;box-shadow:0 0 25px #0a84ffcc;outline:none;transition:box-shadow .3s}audio#audioPlayer:hover{box-shadow:0 0 40px #005ecbcc}#status{margin-top:10px;font-weight:600;min-height:24px;color:#0a84ff;text-shadow:0 0 6px #0a84ff88;user-select:none}.tab-content{color:#ccc;font-style:italic;padding:40px 0;user-select:none;text-align:center;font-size:1.2rem}</style></head><body><div id="app" role="main" aria-label="ElevenLabs API Demo"><header>ElevenLabs API Demo - All Features UI</header><nav role="tablist" aria-label="API Features"><button role="tab" aria-selected="true" id="tab-tts" aria-controls="panel-tts" class="active">Text to Speech</button><button role="tab" aria-selected="false" id="tab-sts" aria-controls="panel-sts">Speech to Speech</button><button role="tab" aria-selected="false" id="tab-stt" aria-controls="panel-stt">Speech to Text</button><button role="tab" aria-selected="false" id="tab-sfx" aria-controls="panel-sfx">Sound Effects</button><button role="tab" aria-selected="false" id="tab-audioiso" aria-controls="panel-audioiso">Audio Isolation</button><button role="tab" aria-selected="false" id="tab-dubbing" aria-controls="panel-dubbing">Dubbing</button><button role="tab" aria-selected="false" id="tab-projects" aria-controls="panel-projects">Projects</button><button role="tab" aria-selected="false" id="tab-voices" aria-controls="panel-voices">Voices</button><button role="tab" aria-selected="false" id="tab-history" aria-controls="panel-history">History</button><button role="tab" aria-selected="false" id="tab-user" aria-controls="panel-user">User</button><button role="tab" aria-selected="false" id="tab-workspace" aria-controls="panel-workspace">Workspace</button><button role="tab" aria-selected="false" id="tab-alignment" aria-controls="panel-alignment">Forced Alignment</button></nav><main><section id="panel-tts" role="tabpanel" aria-labelledby="tab-tts"><label for="inputText">Enter text to synthesize:</label><textarea id="inputText" placeholder="Type your text here..."></textarea><label for="voiceSelect">Choose voice:</label><select id="voiceSelect" aria-label="Voice selection"></select><button id="generateBtn">Generate Speech</button><div id="status" aria-live="polite" aria-atomic="true"></div><audio id="audioPlayer" controls></audio></section><section id="panel-sts" role="tabpanel" aria-labelledby="tab-sts" hidden><div class="tab-content">Speech to Speech feature coming soon...</div></section><section id="panel-stt" role="tabpanel" aria-labelledby="tab-stt" hidden><div class="tab-content">Speech to Text feature coming soon...</div></section><section id="panel-sfx" role="tabpanel" aria-labelledby="tab-sfx" hidden><div class="tab-content">Sound Effects feature coming soon...</div></section><section id="panel-audioiso" role="tabpanel" aria-labelledby="tab-audioiso" hidden><div class="tab-content">Audio Isolation feature coming soon...</div></section><section id="panel-dubbing" role="tabpanel" aria-labelledby="tab-dubbing" hidden><div class="tab-content">Dubbing feature coming soon...</div></section><section id="panel-projects" role="tabpanel" aria-labelledby="tab-projects" hidden><div class="tab-content">Projects feature coming soon...</div></section><section id="panel-voices" role="tabpanel" aria-labelledby="tab-voices" hidden><div class="tab-content">Voices management coming soon...</div></section><section id="panel-history" role="tabpanel" aria-labelledby="tab-history" hidden><div class="tab-content">History feature coming soon...</div></section><section id="panel-user" role="tabpanel" aria-labelledby="tab-user" hidden><div class="tab-content">User info coming soon...</div></section><section id="panel-workspace" role="tabpanel" aria-labelledby="tab-workspace" hidden><div class="tab-content">Workspace management coming soon...</div></section><section id="panel-alignment" role="tabpanel" aria-labelledby="tab-alignment" hidden><div class="tab-content">Forced Alignment feature coming soon...</div></section></main></div><script>(()=>{const e="sk_8f7ff341eea106fb1117f531dd911df827fb39bf5da776ef",t=[{name:"Adam (Male)",id:"AZnzlk1XvdvUeBnXmlld"},{name:"Rachel (Female)",id:"EXAVITQu4vr4xnSDxMaL"},{name:"Domi (Male)",id:"21m00Tcm4TlvDq8ikWAM"},{name:"Bella (Female)",id:"ErXwobaYiN019PkySvjV"},{name:"Antoni (Male)",id:"VR6AewLTigWG4xSOukaG"},{name:"Elli (Female)",id:"MF3mGyEYCl7XYWbV9V6O"},{name:"Josh (Male)",id:"TxGEqnHWrfWFTfGW9XjX"},{name:"Arnold (Male)",id:"VRi47fUHLVnc6bbZT1N6"},{name:"Sam (Male)",id:"21m00Tcm4TlvDq8ikWAM"},{name:"Geraint (Male)",id:"EXAVITQu4vr4xnSDxMaL"}];let n=document.getElementById("inputText"),a=document.getElementById("voiceSelect"),r=document.getElementById("generateBtn"),o=document.getElementById("audioPlayer"),s=document.getElementById("status"),i=document.querySelectorAll("nav button"),c=document.querySelectorAll("main section");function d(e){i.forEach(t=>{t.classList.remove("active"),t.setAttribute("aria-selected","false")}),c.forEach(t=>{t.hidden=!0}),e.classList.add("active"),e.setAttribute("aria-selected","true");let t=document.getElementById("panel-"+e.id.split("-")[1]);t.hidden=!1}i.forEach(e=>{e.addEventListener("click",()=>d(e))}),function(){t.forEach(e=>{let t=document.createElement("option");t.value=e.id,t.textContent=e.name,a.appendChild(t)})}(),async function(e,t){try{s.textContent="Generating audio...";let n=await fetch("https://api.elevenlabs.io/v1/text-to-speech/"+t,{method:"POST",headers:{"Content-Type":"application/json","xi-api-key":e},body:JSON.stringify({text:n.value,voice_settings:{stability:0.75,similarity_boost:0.75}})});if(!n.ok)throw new Error(`API error ${n.status}`);let a=await n.arrayBuffer(),r=URL.createObjectURL(new Blob([a],{type:"audio/mpeg"}));o.src=r,o.play(),s.textContent="Audio generated successfully!"}catch(e){s.textContent="Error: "+e.message}}(e,t[0].id),r.addEventListener("click",()=>{if(!n.value.trim()){s.textContent="Please enter some text to synthesize.";return}s.textContent="";(async()=>{try{s.textContent="Generating audio...";let e=await fetch("https://api.elevenlabs.io/v1/text-to-speech/"+a.value,{method:"POST",headers:{"Content-Type":"application/json","xi-api-key":t},body:JSON.stringify({text:n.value,voice_settings:{stability:0.75,similarity_boost:0.75}})});if(!e.ok)throw new Error(`API error ${e.status}`);let r=await e.arrayBuffer(),i=URL.createObjectURL(new Blob([r],{type:"audio/mpeg"}));o.src=i,o.play(),s.textContent="Audio generated successfully!"}catch(e){s.textContent="Error: "+e.message}})()}),a.addEventListener("change",()=>{n.value="Hello, this is a sample text for "+a.options[a.selectedIndex].text,s.textContent=""})})();
-</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ElevenLabs TTS Demo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    background: #121212;
+    color: #eee;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 30px 20px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  #app {
+    background: #1e1e1e;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 720px;
+    box-shadow: 0 0 20px #0a84ff88;
+    padding: 30px;
+  }
+  h1 {
+    margin-top: 0;
+    color: #0a84ff;
+    text-shadow: 0 0 15px #0a84ff66;
+    user-select: none;
+    font-weight: 700;
+  }
+  label {
+    display: block;
+    margin: 15px 0 8px;
+    font-weight: 600;
+    color: #ddd;
+  }
+  textarea, select {
+    width: 100%;
+    border-radius: 16px;
+    padding: 14px 20px;
+    font-size: 1.1rem;
+    color: #eee;
+    background: #121212;
+    border: none;
+    box-shadow: inset 0 0 20px #0a84ff33;
+    font-family: 'Inter', sans-serif;
+    outline-offset: 0;
+    resize: vertical;
+    transition: box-shadow 0.3s;
+  }
+  textarea:focus, select:focus, select:hover {
+    box-shadow: inset 0 0 35px #0a84ffaa;
+    outline: none;
+  }
+  button {
+    margin-top: 20px;
+    background: #0a84ff;
+    border: none;
+    border-radius: 20px;
+    padding: 16px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 0 25px #0a84ffcc;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    user-select: none;
+  }
+  button:hover:not(:disabled) {
+    background: #005ecb;
+    box-shadow: 0 0 40px #005ecbcc;
+  }
+  button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  audio {
+    margin-top: 20px;
+    width: 100%;
+    border-radius: 16px;
+    box-shadow: 0 0 25px #0a84ffcc;
+    outline: none;
+    transition: box-shadow 0.3s;
+  }
+  audio:hover {
+    box-shadow: 0 0 40px #005ecbcc;
+  }
+  #status {
+    margin-top: 12px;
+    font-weight: 600;
+    min-height: 24px;
+    color: #0a84ff;
+    text-shadow: 0 0 6px #0a84ff88;
+    user-select: none;
+  }
+</style>
+</head>
+<body>
+<div id="app" role="main" aria-label="ElevenLabs TTS Demo">
+  <h1>ElevenLabs Text-to-Speech Demo</h1>
+  <label for="inputText">Enter Text to Synthesize:</label>
+  <textarea id="inputText" placeholder="Type your text here..." rows="5"></textarea>
+
+  <label for="voiceSelect">Choose Voice:</label>
+  <select id="voiceSelect" aria-label="Voice selection"></select>
+
+  <button id="generateBtn">Generate Speech</button>
+
+  <div id="status" aria-live="polite" aria-atomic="true"></div>
+
+  <audio id="audioPlayer" controls></audio>
+</div>
+
+<script>
+  const API_KEY = "sk_8f7ff341eea106fb1117f531dd911df827fb39bf5da776ef"; // Your API key here
+
+  // List of voices - be sure the IDs match those available in ElevenLabs
+  const voices = [
+    { name: "Adam (Male)", id: "AZnzlk1XvdvUeBnXmlld" },
+    { name: "Rachel (Female)", id: "EXAVITQu4vr4xnSDxMaL" },
+    { name: "Domi (Male)", id: "21m00Tcm4TlvDq8ikWAM" },
+    { name: "Bella (Female)", id: "ErXwobaYiN019PkySvjV" },
+    { name: "Antoni (Male)", id: "VR6AewLTigWG4xSOukaG" },
+    { name: "Elli (Female)", id: "MF3mGyEYCl7XYWbV9V6O" },
+    { name: "Josh (Male)", id: "TxGEqnHWrfWFTfGW9XjX" },
+    { name: "Arnold (Male)", id: "VRi47fUHLVnc6bbZT1N6" }
+  ];
+
+  const inputText = document.getElementById("inputText");
+  const voiceSelect = document.getElementById("voiceSelect");
+  const generateBtn = document.getElementById("generateBtn");
+  const audioPlayer = document.getElementById("audioPlayer");
+  const status = document.getElementById("status");
+
+  // Populate voice dropdown
+  function populateVoices() {
+    voices.forEach((voice) => {
+      const option = document.createElement("option");
+      option.value = voice.id;
+      option.textContent = voice.name;
+      voiceSelect.appendChild(option);
+    });
+  }
+
+  // Generate speech
+  async function generateSpeech() {
+    const text = inputText.value.trim();
+    if (!text) {
+      status.textContent = "Please enter some text to synthesize.";
+      return;
+    }
+    generateBtn.disabled = true;
+    status.textContent = "Generating audio...";
+
+    try {
+      const response = await fetch(
+        `https://api.elevenlabs.io/v1/text-to-speech/${voiceSelect.value}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "xi-api-key": API_KEY,
+          },
+          body: JSON.stringify({
+            text: text,
+            voice_settings: {
+              stability: 0.75,
+              similarity_boost: 0.75,
+            },
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      }
+
+      const arrayBuffer = await response.arrayBuffer();
+      const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
+      const audioUrl = URL.createObjectURL(blob);
+      audioPlayer.src = audioUrl;
+      audioPlayer.play();
+      status.textContent = "Audio generated successfully!";
+    } catch (error) {
+      status.textContent = `Error: ${error.message}`;
+    } finally {
+      generateBtn.disabled = false;
+    }
+  }
+
+  generateBtn.addEventListener("click", generateSpeech);
+
+  // Initialize
+  populateVoices();
+  // Set default text sample on voice change
+  voiceSelect.addEventListener("change", () => {
+    inputText.value = `Hello, this is a sample text for ${voiceSelect.selectedOptions[0].text}.`;
+    status.textContent = "";
+  });
+  // Set initial sample text
+  inputText.value = `Hello, this is a sample text for ${voices[0].name}.`;
+</script>
+</body>
+</html>
