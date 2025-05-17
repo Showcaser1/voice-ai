@@ -1,1 +1,41 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>ElevenLabs TTS Pro</title><style>body{background:#121212;color:#eee;font-family:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;margin:0;padding:30px}h1{margin-bottom:30px;font-weight:700;text-shadow:0 0 10px #0a84ff}textarea{width:90%;max-width:650px;height:150px;background:#1f1f1f;border:none;border-radius:18px;padding:20px;font-size:20px;color:#eee;resize:vertical;box-shadow:0 0 15px rgba(10,132,255,.3);outline-offset:0;transition:box-shadow .3s ease}textarea:focus{box-shadow:0 0 25px #0a84ff;outline:none}select{width:90%;max-width:650px;padding:14px 20px;font-size:18px;color:#eee;background:#1f1f1f;border:none;border-radius:18px;box-shadow:0 0 15px rgba(10,132,255,.3);margin:25px 0;cursor:pointer;transition:box-shadow .3s ease}select:hover,select:focus{box-shadow:0 0 25px #0a84ff;outline:none}button{width:90%;max-width:650px;background:#0a84ff;color:#fff;border:none;border-radius:18px;padding:18px;font-size:22px;font-weight:700;cursor:pointer;box-shadow:0 0 20px #0a84ff;transition:background-color .3s ease,box-shadow .3s ease;text-shadow:0 0 3px #004bbd}button:hover{background:#005ecb;box-shadow:0 0 30px #005ecb}audio{margin-top:35px;width:350px;max-width:90%;border-radius:12px;box-shadow:0 0 20px #0a84ff;outline:none;transition:box-shadow .3s ease}audio:hover{box-shadow:0 0 35px #005ecb}</style></head><body><h1>ElevenLabs TTS Pro</h1><textarea id="i" placeholder="Type your text here..."></textarea><select id="v"></select><button id="g">Generate Speech</button><audio id="a" controls></audio><script>!function(){function e(e,t){return e>>>t|e<<32-t}function t(e,t){return e^t^16777215}function r(e){return atob(e)}function n(e){let t="";for(let r=0;r<e.length;r++)t+=String.fromCharCode(e.charCodeAt(r)^42);return t}const o=r("c2tfOGY3ZmYzNDFlZWExMDZmYjExMTdmNTMxZGQ5MTFkZjgyN2ZiMzliZjVkYTc3NmVm"),i=document.getElementById("i"),a=document.getElementById("g"),c=document.getElementById("a"),d=document.getElementById("v"),l=[{name:"Adam (Male)",id:"AZnzlk1XvdvUeBnXmlld"},{name:"Rachel (Female)",id:"EXAVITQu4vr4xnSDxMaL"},{name:"Domi (Male)",id:"21m00Tcm4TlvDq8ikWAM"},{name:"Bella (Female)",id:"ErXwobaYiN019PkySvjV"},{name:"Antoni (Male)",id:"VR6AewLTigWG4xSOukaG"},{name:"Elli (Female)",id:"MF3mGyEYCl7XYWbV9V6O"},{name:"Josh (Male)",id:"TxGEqnHWrfWFTfGW9XjX"},{name:"Arnold (Male)",id:"VRi47fUHLVnc6bbZT1N6"},{name:"Sam (Male)",id:"pNInz6obpgDQGcFmaJgB"}];function s(e){return e.replace(/[<>&"'`]/g,t=>({"<":"&lt;",">":"&gt;","&":"&amp;","\"":"&quot;","'":"&#39;","`":"&#96;"})[t])}function u(e){let t="";for(let r=0;r<e.length;r++){let n=e.charCodeAt(r);t+=String.fromCharCode(n^42)}return t}function f(){l.forEach(e=>{let t=document.createElement("option");t.value=e.id,t.textContent=e.name,d.appendChild(t)})}async function m(){let t=i.value.trim();if(!t)return alert("Enter text!"),void 0;a.disabled=!0,a.textContent="Generating...";try{let r=await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${d.value}`,{method:"POST",headers:{"xi-api-key":o,"Content-Type":"application/json"},body:JSON.stringify({text:t,voice_settings:{stability:.55,similarity_boost:.7}})});if(!r.ok)throw new Error(`Err:${r.status}`);let n=await r.blob(),s=URL.createObjectURL(n);c.src=s;c.play()}catch(e){alert("Failed:"+e.message)}finally{a.disabled=!1,a.textContent="Generate Speech"}}f(),a.onclick=m}();</script></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Free TTS Generator</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <h1>ElevenLabs TTS Generator</h1>
+  <textarea id="text" placeholder="Type something..."></textarea><br>
+  <select id="voice">
+    <option value="Adam">Adam (Default)</option>
+    <option value="Bella">Bella</option>
+    <option value="Antoni">Antoni</option>
+  </select>
+  <button onclick="generateSpeech()">Generate</button>
+  <audio id="audio" controls></audio>
+
+  <script>
+    async function generateSpeech() {
+      const API_KEY = prompt("Enter YOUR ElevenLabs API key (safe, stays in your browser):");
+      const text = document.getElementById("text").value;
+      const voice = document.getElementById("voice").value;
+
+      try {
+        const response = await axios.post(
+          `https://api.elevenlabs.io/v1/text-to-speech/${voice}`,
+          { text: text, voice_settings: { stability: 0.5, similarity_boost: 0.5 } },
+          { 
+            headers: { "xi-api-key": API_KEY, "Content-Type": "application/json" },
+            responseType: "arraybuffer"
+          }
+        );
+        const audio = new Audio(URL.createObjectURL(new Blob([response.data], { type: "audio/mpeg" })));
+        document.getElementById("audio").src = audio.src;
+      } catch (error) {
+        alert("Error: " + error.message);
+      }
+    }
+  </script>
+</body>
+</html>
