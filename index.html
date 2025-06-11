@@ -1,54 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta Coqui TTS charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Voice Clone Chaos</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.21.0/dist/tf.min.js"></script>
 </head>
 <body class="bg-black text-white flex flex-col items-center justify-center min-h-screen">
     <div class="container mx-auto p-8 text-center">
         <h1 class="text-5xl font-extrabold mb-6 text-red-600">Voice Clone Chaos</h1>
-        <p class="text-xl mb-8">Drop an audio file, type some wild shit, and make that voice say it!</p>
+        <p class="text-xl mb-8">Drop an audio file, fuck with the settings, and clone voices locally with Coqui TTS!</p>
         
         <input type="file" id="audioInput" accept="audio/*" class="mb-6 p-3 bg-gray-900 rounded-lg border-2 border-red-600">
-        <textarea id="textInput" placeholder="Make it say something fucked up..." class="w-full p-5 bg-gray-900 rounded-lg border-2 border-red-600 mb-6 text-white"></textarea>
+        <textarea id="textInput" placeholder="Type some wild shit for the voice..." class="w-full p-5 bg-gray-900 rounded-lg border-2 border-red-600 mb-6 text-white"></textarea>
+        
+        <div class="mb-6">
+            <label for="pitch" class="block text-lg font-bold">Pitch (High or Low AF)</label>
+            <input type="range" id="pitch" min="0.5" max="2" step="0.1" value="1" class="w-full">
+        </div>
+        <div class="mb-6">
+            <label for="speed" class="block text-lg font-bold">Speed (Fast or Slow)</label>
+            <input type="range" id="speed" min="0.5" max="2" step="0.1" value="1" class="w-full">
+        </div>
+        <div class="mb-6">
+            <label for="emotion" class="block text-lg font-bold">Emotion Vibe</label>
+            <select id="emotion" class="p-3 bg-gray-900 rounded-lg border-2 border-red-600">
+                <option value="neutral">Neutral</option>
+                <option value="angry">Angry</option>
+                <option value="happy">Happy</option>
+                <option value="sad">Sad</option>
+            </select>
+        </div>
+        <div class="mb-6">
+            <label for="language" class="block text-lg font-bold">Language (Go Global)</label>
+            <select id="language" class="p-3 bg-gray-900 rounded-lg border-2 border-red-600">
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="ja">Japanese</option>
+            </select>
+        </div>
+        
         <button id="cloneButton" class="bg-red-600 hover:bg-red-800 text-white font-bold py-3 px-6 rounded-lg">Clone That Shit!</button>
         <audio id="outputAudio" controls class="mt-6"></audio>
         <p id="status" class="mt-6 text-red-400 font-bold"></p>
     </div>
 
     <script>
-        async function loadVoiceModel() {
-            console.log("Loading the dopest voice cloning model...");
-            // Mocking a beastly voice cloning model
+        async function cloneVoiceLocally(audioFile, text, options) {
+            // Mock Coqui TTS integration (replace with actual Coqui TTS Python backend)
+            console.log(`Cloning locally with Coqui TTS: ${text}, pitch: ${options.pitch}, speed: ${options.speed}, emotion: ${options.emotion}, lang: ${options.language}`);
             await new Promise(resolve => setTimeout(resolve, 1500));
-            return {
-                cloneVoice: (audioData, text) => {
-                    console.log(`Cloning voice to say: ${text}`);
-                    // Simulate audio output (replace with real model like Tortoise-TTS for real shit)
-                    return new Blob([new Uint8Array(2048)], { type: 'audio/wav' });
-                }
-            };
+            return new Blob([new Uint8Array(2048)], { type: 'audio/wav' });
         }
 
         document.getElementById('cloneButton').addEventListener('click', async () => {
             const audioInput = document.getElementById('audioInput').files[0];
             const textInput = document.getElementById('textInput').value;
+            const pitch = document.getElementById('pitch').value;
+            const speed = document.getElementById('speed').value;
+            const emotion = document.getElementById('emotion').value;
+            const language = document.getElementById('language').value;
             const status = document.getElementById('status');
             const outputAudio = document.getElementById('outputAudio');
 
             if (!audioInput || !textInput) {
-                status.textContent = "Yo, upload a file and type some shit first!";
+                status.textContent = "Yo, drop a file and some text, fam!";
                 return;
             }
 
-            status.textContent = "Cloning that voice, hold up...";
+            status.textContent = "Cloning that voice locally...";
 
             try {
-                const model = await loadVoiceModel();
-                const audioBlob = await model.cloneVoice(audioInput, textInput);
+                const audioBlob = await cloneVoiceLocally(audioInput, textInput, { pitch, speed, emotion, language });
                 const audioUrl = URL.createObjectURL(audioBlob);
                 outputAudio.src = audioUrl;
                 status.textContent = "Boom! Voice cloned, play that shit!";
